@@ -52,7 +52,7 @@ spec:
           - name: AZURE_KEY
             valueFrom:
               secretKeyRef:
-                name: Ocp-Apim-Subscription-Key
+                name: ocp-apim-subscription-key
                 key: api-key
         ports:
           - containerPort: 8006
