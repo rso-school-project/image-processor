@@ -7,9 +7,9 @@ from image_processor import VERSION, MODULE, API_VERSION
 class CustomisedJSONFormatter(json_log_formatter.JSONFormatter):
     def json_record(self, message, extra, record):
         extra['message'] = message
-        extra['level'] = record.levelname
-        extra['processName'] = record.processName
-        extra['threadName'] = record.threadName
+        extra['level'] = 'WARN' if '/health/' in message else record.levelname
+        extra['process'] = record.process
+        extra['thread'] = record.thread
         extra['funcName'] = record.funcName
         extra['api_version'] = API_VERSION
         extra['app_version'] = VERSION
