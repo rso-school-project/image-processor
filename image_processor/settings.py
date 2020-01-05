@@ -17,4 +17,4 @@ config_y = config('config_y', cast=str, default='This is default for Y')
 #DB_USERNAME = config('DB_USERNAME', cast=str, default='postgres')
 #DB_PASSWORD = config('DB_PASSWORD', cast=Secret, default='postgres')
 
-AZURE_KEY = config('Ocp-Apim-Subscription-Key', cast=str, default='Not provided')
+AZURE_KEY = config('AZURE_KEY', cast=str, default='Not provided')

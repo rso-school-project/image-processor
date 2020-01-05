@@ -49,6 +49,11 @@ spec:
               secretKeyRef:
                 name: db-user-pass
                 key: DB_PASSWORD
+          - name: AZURE_KEY
+            valueFrom:
+              secretKeyRef:
+                name: Ocp-Apim-Subscription-Key
+                key: api-key
         ports:
           - containerPort: 8006
             name: server
