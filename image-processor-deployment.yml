@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-processor
+#  namespace: rso
+  labels:
+    app: image-processor
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: image-processor
+  template:
+    metadata:
+      labels:
+        app: image-processor
+    spec:
+      volumes:
+        - name: google-cloud-key
+          secret:
+            secretName: google-cloud-key
+      containers:
+      - image: timotejgale/image-processor
+        name: image-processor
+        volumeMounts:
+          - name: google-cloud-key
+            mountPath: /var/secrets/google
+        env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /var/secrets/google/key.json
+          - name: MODULE_NAME
+            value: image_processor
+          - name: PORT
+            value: "8006"
+          - name: ETCD_HOST_URL
+            value: "etcd"
+          - name: ETCD_HOST_PORT
+            value: "2379"
+          - name: DB_URL
+            value: "10.32.192.3"
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: db-user-pass
+                key: DB_USERNAME
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-user-pass
+                key: DB_PASSWORD
+        ports:
+          - containerPort: 8006
+            name: server
+            protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: server
+          initialDelaySeconds: 20
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: server
+          initialDelaySeconds: 20
+          periodSeconds: 3
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: image-processor-service
+#  namespace: rso
+  labels:
+    app: image-processor
+spec:
+  type: NodePort
+  ports:
+    - port: 8006
+      protocol: TCP
+      targetPort: server
+  selector:
+    app: image-processor
